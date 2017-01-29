@@ -1,19 +1,19 @@
-'use strict'
+'use strict';
 
-const Knex = require('knex')
-const HemeraJoi = require('hemera-joi')
-const SqlStore = require('./store')
-const StorePattern = require('../hemera-store/pattern')
+const Knex = require('knex');
+const HemeraJoi = require('hemera-joi');
+const SqlStore = require('./store');
+const StorePattern = require('../hemera-store/pattern');
 
 exports.plugin = function hemeraSqlStore(options) {
 
-  const hemera = this
-  const connections = {}
-  const topic = 'sql-store'
+  const hemera = this;
+  const connections = {};
+  const topic = 'sql-store';
 
-  hemera.use(HemeraJoi)
+  hemera.use(HemeraJoi);
 
-  hemera.expose('connectionPool', connections)
+  hemera.expose('connectionPool', connections);
 
   function useDb(databaseName) {
 
@@ -24,7 +24,7 @@ exports.plugin = function hemeraSqlStore(options) {
     if (databaseName) {
 
       let option = Object.assign({}, options.connection);
-      option.database = databaseName
+      option.database = databaseName;
 
       connections[databaseName] = Knex({
         dialect: options.dialect,
@@ -33,36 +33,49 @@ exports.plugin = function hemeraSqlStore(options) {
           min: 0,
           max: 7
         }
-      })
+      });
 
       return connections[databaseName]
     }
 
-    connections[databaseName] = options.knex.driver
+    connections[databaseName] = options.knex.driver;
 
     return connections[databaseName]
 
   }
 
   /**
-   * Create a new database
+   * Create a new entity
    */
   hemera.add(StorePattern.create(topic), function (req, cb) {
 
-    let db = useDb(req.database)
+    let db = useDb(req.database);
 
-    const store = new SqlStore(db)
+    const store = new SqlStore(db);
 
-    store.create(req, cb)
-  })
+    store.create(req.table, req.data, cb)
+  });
 
-}
+
+  /**
+   * Find an entity
+   */
+  hemera.add(StorePattern.find(topic), function (req, cb) {
+
+    let db = useDb(req.database);
+
+    const store = new SqlStore(db);
+
+    store.find(req.table, req.query, req.options, cb)
+  });
+
+};
 
 exports.options = {
   payloadValidator: 'hemera-joi'
-}
+};
 
 exports.attributes = {
   name: 'hemera-sql-store',
   dependencies: ['hemera-joi']
-}
+};

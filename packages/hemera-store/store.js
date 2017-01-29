@@ -44,6 +44,7 @@ class Store {
 
     return this._options
   }
+
   /**
    * Create a new entity
    *
