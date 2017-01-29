@@ -1,6 +1,6 @@
 'use strict'
 
-const Store = require('hemera-store')
+const Store = require('../hemera-store')
 
 /**
  *
@@ -31,7 +31,7 @@ class SqlStore extends Store {
    */
   create(req, cb) {
 
-    this._driver.table(req.collection).insert(req.data).asCallback(cb);
+    this._driver.table(req.table).insert(req.data).asCallback(cb);
   }
 
 }

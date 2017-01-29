@@ -3,7 +3,7 @@
 const Knex = require('knex')
 const HemeraJoi = require('hemera-joi')
 const SqlStore = require('./store')
-const StorePattern = require('hemera-store/pattern')
+const StorePattern = require('../hemera-store/pattern')
 
 exports.plugin = function hemeraSqlStore(options) {
 
