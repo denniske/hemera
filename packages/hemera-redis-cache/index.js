@@ -1,38 +1,38 @@
-'use strict'
+'use strict';
 
-const Redis = require('redis')
+const Redis = require('redis');
 
 exports.plugin = function hemeraRedisCache(options) {
 
-  const hemera = this
-  const client = Redis.createClient(options.redis)
-  const topic = 'redis-cache'
+  const hemera = this;
+  const client = Redis.createClient(options.redis);
+  const topic = 'redis-cache';
 
   client.on('ready', function () {
 
     hemera.log.info('Redis Cache is ready')
-  })
+  });
 
   client.on('end', function () {
 
     hemera.log.warn('Redis client connection closed')
-  })
+  });
 
   client.on('reconnecting', function (msg) {
 
     hemera.log.info(msg, 'Redis client is reconnecting')
-  })
+  });
 
   client.on('warning', function (msg) {
 
     hemera.log.warn(msg, 'Redis client warning')
-  })
+  });
 
   client.on('error', function (err) {
 
-    hemera.log.fatal(err)
+    hemera.log.fatal(err);
     hemera.fatal()
-  })
+  });
 
 
   hemera.add({
@@ -40,9 +40,13 @@ exports.plugin = function hemeraRedisCache(options) {
     cmd: 'set'
   }, function (req, cb) {
 
-    client.set(req.key, req.value, cb)
+    client.set(req.key, req.value, cb);
 
-  })
+    if(req.ttlSeconds) {
+      client.expire(req.key, req.ttlSeconds);
+    }
+
+  });
 
   hemera.add({
     topic,
@@ -51,7 +55,7 @@ exports.plugin = function hemeraRedisCache(options) {
 
     client.get(req.key, cb)
 
-  })
+  });
 
   hemera.add({
     topic,
@@ -60,7 +64,7 @@ exports.plugin = function hemeraRedisCache(options) {
 
     client.hmset(req.key, req.values, cb)
 
-  })
+  });
 
   hemera.add({
     topic,
@@ -69,7 +73,7 @@ exports.plugin = function hemeraRedisCache(options) {
 
     client.hget(req.key, req.values, cb)
 
-  })
+  });
 
   hemera.add({
     topic,
@@ -78,7 +82,7 @@ exports.plugin = function hemeraRedisCache(options) {
 
     client.hgetall(req.key, cb)
 
-  })
+  });
 
   hemera.add({
     topic,
@@ -87,7 +91,7 @@ exports.plugin = function hemeraRedisCache(options) {
 
     client.expire(req.key, req.ttlSeconds, cb)
 
-  })
+  });
 
   hemera.add({
     topic,
@@ -96,7 +100,7 @@ exports.plugin = function hemeraRedisCache(options) {
 
     client.exists(req.key, cb)
 
-  })
+  });
 
   hemera.add({
     topic,
@@ -107,12 +111,12 @@ exports.plugin = function hemeraRedisCache(options) {
 
   })
 
-}
+};
 
 exports.options = {
   redis: null
-}
+};
 
 exports.attributes = {
   name: 'hemera-redis-cache'
-}
+};
