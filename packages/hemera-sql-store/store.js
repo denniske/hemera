@@ -1,6 +1,5 @@
-'use strict'
 
-const Store = require('../hemera-store')
+const Store = require('../hemera-store');
 
 /**
  *
@@ -10,62 +9,71 @@ const Store = require('../hemera-store')
  */
 class SqlStore extends Store {
   /**
-   * Creates an instance of ArangoStore.
+   * Creates an instance of SqlStore.
    *
    * @param {any} driver
    * @param {any} options
    *
-   * @memberOf ArangoStore
+   * @memberOf SqlStore
    */
   constructor(driver, options) {
 
     super(driver, options)
   }
 
-  // /**
-  //  *
-  //  *
-  //  * @param {any} req
-  //  * @param {any} cb
-  //  *
-  //  * @memberOf ArangoStore
-  //  */
-  // create(req, cb) {
-  //
-  //   this._driver.table(req.table).insert(req.data).asCallback(cb);
-  // }
-
-
   /**
    * Create a new entity
    *
+   * @param table
    * @param {object} data
    * @param {function} cb
    *
-   * @memberOf Store
+   * @memberOf SqlStore
    */
   create(table, data, cb) {
     this._driver.table(table).insert(data).asCallback(cb);
   }
 
-
   /**
    * Find an entity
    *
+   * @param table
    * @param {object} query
    * @param {object} options
    * @param {function} cb
    *
-   * @memberOf Store
+   * @memberOf SqlStore
    */
-  find(table, query, options, cb) {
+  find(table, query, cb) {
     this._driver.table(table).where(query).asCallback(cb);
   }
 
+  /**
+   * Update an entity by id
+   *
+   * @param table
+   * @param id
+   * @param data
+   * @param {function} cb
+   *
+   * @memberOf SqlStore
+   */
+  updateById(table, id, data, cb) {
+    this._driver.table(table).where(id).update(data).asCallback(cb);
+  }
 
-
-
-
+  /**
+   * Remove an entity by id
+   *
+   * @param table
+   * @param id
+   * @param {function} cb
+   *
+   * @memberOf SqlStore
+   */
+  removeById(table, id, cb) {
+    this._driver.table(table).where(id).del().asCallback(cb);
+  }
 }
 
-module.exports = SqlStore
+module.exports = SqlStore;
