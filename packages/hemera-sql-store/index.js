@@ -66,8 +66,31 @@ exports.plugin = function hemeraSqlStore(options) {
 
     const store = new SqlStore(db);
 
-    store.find(req.table, req.query, req.options, cb)
+    store.find(req.table, req.query, cb)
   });
+
+  /**
+   * Update an entity
+   */
+  hemera.add(StorePattern.updateById(topic), function (req, cb) {
+
+    let db = useDb(req.database);
+
+    const store = new SqlStore(db);
+
+    store.updateById(req.table, req.id, req.data, cb)
+  });
+
+
+  hemera.add(StorePattern.removeById(topic), function (req, cb) {
+
+    let db = useDb(req.databaseName);
+
+    const store = new SqlStore(db);
+
+    store.removeById(req.table, req.id, cb);
+
+  })
 
 };
 
